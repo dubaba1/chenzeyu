@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>民宿简介</title>
+	<link rel="stylesheet" href="css/eleindex.css">
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script type="text/javascript" src="js/tool.js"></script>
+	<script type="text/javascript" src="js/eleindex.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script type="text/javascript" src="js/axios.js"></script>
+	<link type="text/css" rel="stylesheet" href="css/css.css">
+</head>
+
+<body>
+<div class="line" id="app">
+	<el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+		<el-menu-item index="1"><a href="index.html" >民宿简介</a></el-menu-item>
+		<el-menu-item index="2" ><a href="bookroom.html" >我要订房</a></el-menu-item>
+		<el-menu-item index="3" ><a href="order.html" >我的订单</a></el-menu-item>
+		<el-menu-item index="4" @click="centerDialogVisiblemsg = true">查看公告</el-menu-item>
+	</el-menu>
+
+	<div class="searchWord" style="margin-top: -50px;margin-left: 400px">
+		<el-input v-model="search" style="display: inline-block;width: 250px;height: 30px;" placeholder="请输入搜索内容">
+		</el-input>
+	</div>
+	<div class="searchWord" style="margin-top: -21px;margin-left: 700px;position:absolute;">
+		<span style="font-size: 16px;font-weight:600;" id="menu"></span>
+	</div>
+	<div class="searchWord" style="margin-top: -25px;margin-left: 950px;position:absolute;">
+		<el-button size="small"  @click="centerDialogVisible = true">注册</el-button>
+	</div>
+	<div class="searchWord" style="margin-top: -25px;margin-left: 1020px;position:absolute;">
+		<el-button type="primary" @click="centerDialogVisiblelogin = true" size="small">登录</el-button>
+	</div>
+	<div class="searchWord" style="margin-top: -25px;margin-left: 1430px;position:absolute;">
+		<el-button size="small"  @click="login_out">退出登录</el-button>
+	</div>
+	<el-dialog title="查看公告" :visible.sync="centerDialogVisiblemsg" width="30%" :modal-append-to-body='false' center>
+		<div v-for="(item,index) in userData" :key="item.id">
+			<p style="margin-left:15px;margin-top: 15px;font-size: 13px" v-html="item.title"></p>
+			<br>
+			<p style="margin-left:15px;margin-top:-10px;font-size: 13px;color:darkgray" v-html="item.msg"> </p>
+		</div>
+		<span slot="footer" class="dialog-footer">
+				<el-button @click="centerDialogVisiblemsg = false">取 消</el-button>
+			</span>
+	</el-dialog>
+
+	<el-dialog title="请填写信息注册" :visible.sync="centerDialogVisible" width="30%" :modal-append-to-body='false' center>
+		<el-form :model="form" ref="form">
+			<el-form-item label="用户真实姓名：" :label-width="formLabelWidth">
+				<el-input v-model="form.z_name" autocomplete="off"></el-input>
+			</el-form-item>
+			<el-form-item label="电话：" :label-width="formLabelWidth">
+				<el-input v-model="form.telephone" autocomplete="off"></el-input>
+			</el-form-item>
+			<el-form-item label="登录用户名：" :label-width="formLabelWidth">
+				<el-input v-model="form.user_name" autocomplete="off"></el-input>
+			</el-form-item>
+			<el-form-item label="登录密码：" :label-width="formLabelWidth">
+				<el-input v-model="form.user_password" autocomplete="off"></el-input>
+			</el-form-item>
+
+		</el-form>
+		<span slot="footer" class="dialog-footer">
+				<el-button @click="centerDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="onSubmit">确定注册</el-button>
+			</span>
+	</el-dialog>
+
+	<el-dialog title="登录" :visible.sync="centerDialogVisiblelogin" width="30%" :modal-append-to-body='false' center>
+		<el-form :model="loginform" ref="loginform">
+			<el-form-item label="登录用户名：" :label-width="formLabelWidth">
+				<el-input v-model="loginform.user_name" autocomplete="off"></el-input>
+			</el-form-item>
+			<el-form-item label="登录密码：" :label-width="formLabelWidth">
+				<el-input v-model="loginform.user_password"  type="password" autocomplete="off"></el-input>
+			</el-form-item>
+
+		</el-form>
+		<span slot="footer" class="dialog-footer">
+				<el-button @click="centerDialogVisiblelogin = false">取 消</el-button>
+				<el-button type="primary" @click="onSubmitlogin">确定登录</el-button>
+			</span>
+	</el-dialog>
+
+	<div  class="box" style="position:relative;">
+		<img src="img/11.jpg" width="1800px" height="1000px"/>
+		<div class="c_words" style="position:absolute;top:200px;line-height:30px;margin-left: 750px;color: #ecf5ff;font-size: 50px;font-weight: bold">居隐阁民宿</div>
+		<div class="c_words" style="position:absolute;top:300px;color: #ecf5ff;font-size: 17px;font-weight: bold;width: 700px;height: 300px;margin-left: 550px">
+			<p style="margin-top: 3px;color: #ecf5ff;line-height:25px">
+				民宿是指利用自用住宅空闲房间，结合当地人文、自然景观、生态、环境资源及农林渔牧生产活动，为外出郊游或远行的旅客提供个性化住宿场所。除了一般常见的饭店以及旅社之外，其它可以提供旅客住宿的地方，例如民宅、休闲中心、农庄、农舍、牧场等，都可以归纳成民宿类。而民宿的产生是必然的，并不偶发于日本或台湾，世界各地都可看到类似性质的服务，民宿这个名字，在世界各国会因环境与文化生活不同而略有差异，欧陆方面多是采农庄式民宿(Accommodation in the Farm)经营，让一般民宿能够舒适地享受农庄式田园生活环境，体验农庄生活；加拿大则是采假日农庄(Vacation Farm)的模式，提供一般民宿假日可以享受农庄生活；美国都多见居家式民宿(Homestay)或青年旅舍(Hostel)，不刻意布置的居家住宿，价格相对饭店便宜的住宿选择；英国则惯称Bed and Breakfast(BNB)，按字面解释，意谓提供睡觉的地区以及简单早餐，索费大多每人每晚约二、三十英镑，视星级而定，当然价格会比一般旅馆便宜许多。
+
+			</p>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+	var user_id = localStorage.getItem("user_id");
+	var user_name = localStorage.getItem("user_name");
+	 document.getElementById("menu").innerHTML = "你好！"+user_name;
+ new Vue({
+		el: '#app',
+		data: {
+			api: serverUrl+'/image/?name=',
+			search:'',
+			formLabelWidth: '',
+			centerDialogVisible: false,
+			centerDialogVisiblelogin: false,
+			centerDialogVisiblemsg:false,
+			activeIndex: '1',
+			tableData: [],
+			userData:[],
+			form: {
+				user_name: '',
+				user_password: '',
+				z_name: '',
+				telephone: '',
+
+			},
+			loginform:{
+				user_name:'',
+				user_password: '',
+			},
+
+		},
+		mounted() {
+			 //this.convert(this.tableData);
+			this.notice(this.userData);
+		},
+		methods: {
+			notice: function () {
+				axios.get(host + "/select_gonggao/").then(res => {
+					this.userData = res.data.data;
+				})
+			},
+			handleSelect(key, keyPath) {
+				console.log(key, keyPath);
+			},
+			login_out(){//退出登录
+               localStorage.removeItem("user_id");
+               localStorage.removeItem("user_name");
+               window.location.reload();
+			},
+			onSubmit(){//注册
+				axios({
+					method: 'post',
+					url: host + '/add_user/',
+					data: {
+						user_name: this.form.user_name,
+						user_password: this.form.user_password,
+						z_name: this.form.z_name,
+						telephone: this.form.telephone,
+
+					},
+				})
+						.then(function (response) {
+							if (response.data.code == 1) {
+								console.log(response.data.msg);
+								alert(response.data.msg);
+								window.location.reload();
+							}
+							else {
+								alert(response.data.msg);
+							}
+						})
+						.catch(function (error) {
+							console.log(error);
+						})
+
+			},
+			onSubmitlogin(){//登录
+				axios({
+					method: 'post',
+					url: host + '/login_user/',
+					data: {
+						user_name: this.loginform.user_name,
+						user_password: this.loginform.user_password
+
+					},
+				})
+						.then(function (response) {
+							if (response.data.code == 1) {
+								localStorage.removeItem("user_id");
+								localStorage.setItem("user_id", response.data.data.id);
+								localStorage.removeItem("user_name");
+								localStorage.setItem("user_name", response.data.data.name);
+								console.log(response.data.msg);
+								alert(response.data.msg);
+								window.location.reload();
+							}
+							else {
+								alert(response.data.msg);
+							}
+						})
+						.catch(function (error) {
+							console.log(error);
+						})
+
+			},
+
+		},
+	})
+</script>
+
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>办理退房</title>
+	<link rel="stylesheet" href="css/layui.css" media="all" />
+	<script type="text/javascript" src="js/layui.js"></script>
+	<link rel="stylesheet" href="css/eleindex.css">
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script type="text/javascript" src="js/eleindex.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script type="text/javascript" src="js/axios.js"></script>
+	<script type="text/javascript" src="js/tool.js"></script>
+</head>
+
+<body>
+<div class="layui-layout layui-layout-admin">
+	<div class="layui-header">
+		<div class="layui-logo" style="margin-left:-22px">管理端</div>
+		<ul class="layui-nav layui-layout-right">
+			<li class="layui-nav-item">
+				<a href="javascript:;">
+				</a>
+			</li>
+
+		</ul>
+	</div>
+	<div class="layui-side layui-bg-black">
+		<div class="layui-side-scroll">
+			<ul class="layui-nav layui-nav-tree" lay-filter="test">
+				<li class="layui-nav-item">
+					<a class="" href="index.html"><i class="el-icon-edit-outline"></i> 公告管理</a>
+				</li>
+				<li class="layui-nav-item">
+					<a class="" href="room.html"><i class="el-icon-edit-outline"></i> 客房管理</a>
+				</li>
+				<li class="layui-nav-item">
+					<a class="" href="order.html"><i class="el-icon-edit-outline"></i> 办理入住</a>
+				</li>
+				<li class="layui-nav-item">
+					<a class="layui-this" href="outorder.html"><i class="el-icon-edit-outline"></i> 办理退房</a>
+				</li>
+				<li class="layui-nav-item">
+					<a class="" href="history.html"><i class="el-icon-edit-outline"></i> 历史订单</a>
+				</li>
+				<li class="layui-nav-item">
+				<a class="" href="user.html"><i class="el-icon-edit-outline"></i> 用户管理</a>
+			 </li>
+
+			</ul>
+		</div>
+	</div>
+	<div class="layui-body">
+		<div style="padding: 15px;height: 100%; margin: 0">
+			<div class="login-box" id="app">
+
+				<div class="searchWord" style="text-align: center;margin-top: 5px;margin-bottom: 30px;">
+					<el-input v-model="search" style="display: inline-block;width: 300px;" placeholder="请输入搜索内容">
+					</el-input>
+				</div>
+				<el-table :data="tables" border style="width: 100%">
+					<el-table-column label="房间号">
+						<template slot-scope="scope">
+							<span style="margin-left: 10px" >{{scope.row.nenber}}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="房间地址">
+						<template slot-scope="scope">
+							<span style="margin-left: 10px" >{{scope.row.path}}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="价格(元/天)">
+						<template slot-scope="scope">
+
+							<span style="margin-left: 10px" >{{scope.row.money}}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="押金(元)">
+						<template slot-scope="scope">
+
+							<span style="margin-left: 10px" >{{scope.row.ya_money}}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="房间描述">
+					<template slot-scope="scope">
+
+						<span style="margin-left: 10px" >{{scope.row.body}}</span>
+					</template>
+				</el-table-column>
+					<el-table-column label="入住人姓名">
+						<template slot-scope="scope">
+
+							<span style="margin-left: 10px" >{{scope.row.z_name}}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="入住人电话">
+						<template slot-scope="scope">
+
+							<span style="margin-left: 10px" >{{scope.row.telephone}}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="操作">
+						<template slot-scope="scope">
+							<el-button size="mini" type="success" @click="handleDelete(scope.$index, scope.row)"><i class="el-icon-success"></i>    办理退房</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	var manger_id = localStorage.getItem("manger_id");
+	var vm=new Vue({
+		el: '#app',
+		data: {
+			api: serverUrl+'/image/?name=',
+			search: '',
+			formLabelWidth: '',
+			centerDialogVisible: false,
+			centerDialogVisiblestudent: false,
+			form: {
+				title:'',
+				msg:'',
+			},
+			tableData: [],
+
+		},
+		mounted() {
+			this.convert(this.tableData);
+		},
+		computed: {
+			tables: function () {
+				const search = this.search
+				if (search) {
+					return this.tableData.filter(dataNews => {
+						return Object.keys(dataNews).some(key => {
+							return String(dataNews[key]).toLowerCase().indexOf(search) > -1
+						})
+					})
+				}
+				return this.tableData
+			}
+		},
+		methods: {
+			convert: function () {
+				axios.get(host + "/select_in_dianpu/").then(res => {
+					this.tableData = res.data.data;
+				})
+			},
+			handleDelete(index, row) {
+				console.log(index, row.id);
+				axios({
+					method: 'post',
+					url: host + '/check_out/',
+					data: {
+						id: row.id,
+					},
+				})
+						.then(function (response) {
+							if (response.data.state == 1) {
+								console.log(response.data.msg);
+								alert(response.data.msg);
+								window.location.reload();
+							}
+							else {
+								alert(response.data.msg);
+							}
+						})
+						.catch(function (error) {
+							console.log(error);
+						})
+			},
+
+		},
+	})
+</script>
+
+</html>

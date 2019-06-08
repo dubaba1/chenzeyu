@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>我的订单</title>
+    <link rel="stylesheet" href="css/eleindex.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script type="text/javascript" src="js/vue.js"></script>
+    <script type="text/javascript" src="js/tool.js"></script>
+    <script type="text/javascript" src="js/eleindex.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="js/axios.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/css.css">
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/index.js"></script>
+</head>
+
+<body>
+<div class="line" id="app">
+    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+        <el-menu-item index="1"><a href="index.html" >民宿简介</a></el-menu-item>
+        <el-menu-item index="2" ><a href="bookroom.html" >我要订房</a></el-menu-item>
+        <el-menu-item index="3" ><a href="order.html" >我的订单</a></el-menu-item>
+        <el-menu-item index="4" @click="centerDialogVisiblemsg = true">查看公告</el-menu-item>
+    </el-menu>
+
+    <div class="searchWord" style="margin-top: -50px;margin-left: 400px">
+        <el-input v-model="search" style="display: inline-block;width: 250px;height: 30px;" placeholder="请输入搜索内容">
+        </el-input>
+    </div>
+    <div class="searchWord" style="margin-top: -21px;margin-left: 700px;position:absolute;">
+        <span style="font-size: 16px;font-weight:600;" id="menu"></span>
+    </div>
+
+    <div style="padding: 35px;height: 100%; margin: 0">
+
+        <el-dialog title="查看公告" :visible.sync="centerDialogVisiblemsg" width="30%" :modal-append-to-body='false' center>
+            <div v-for="(item,index) in userData" :key="item.id">
+                <p style="margin-left:15px;margin-top: 15px;font-size: 13px" v-html="item.title"></p>
+                <br>
+                <p style="margin-left:15px;margin-top:-10px;font-size: 13px;color:darkgray" v-html="item.msg"> </p>
+            </div>
+            <span slot="footer" class="dialog-footer">
+				<el-button @click="centerDialogVisiblemsg = false">取 消</el-button>
+			</span>
+        </el-dialog>
+
+        <el-dialog title="请填写信息注册" :visible.sync="centerDialogVisible" width="30%" :modal-append-to-body='false' center>
+            <el-form :model="form" ref="form">
+                <el-form-item label="用户真实姓名：" :label-width="formLabelWidth">
+                    <el-input v-model="form.z_name" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="电话：" :label-width="formLabelWidth">
+                    <el-input v-model="form.telephone" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="登录用户名：" :label-width="formLabelWidth">
+                    <el-input v-model="form.user_name" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="登录密码：" :label-width="formLabelWidth">
+                    <el-input v-model="form.user_password" autocomplete="off"></el-input>
+                </el-form-item>
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+				<el-button @click="centerDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="onSubmit">确定注册</el-button>
+			</span>
+        </el-dialog>
+
+    <el-dialog title="登录" :visible.sync="centerDialogVisiblelogin" width="30%" :modal-append-to-body='false' center>
+        <el-form :model="loginform" ref="loginform">
+            <el-form-item label="登录用户名：" :label-width="formLabelWidth">
+                <el-input v-model="loginform.name" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="登录密码：" :label-width="formLabelWidth">
+                <el-input v-model="loginform.password"  type="password" autocomplete="off"></el-input>
+            </el-form-item>
+
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+				<el-button @click="centerDialogVisiblelogin = false">取 消</el-button>
+				<el-button type="primary" @click="onSubmitlogin">确定登录</el-button>
+			</span>
+    </el-dialog>
+        <el-dialog title="评价订单" :visible.sync="centerDialogVisiblestudent" width="30%" :modal-append-to-body='false' center>
+            <el-form :model="editForm" ref="editForm">
+                <el-form-item label="房间号：" :label-width="formLabelWidth">
+                    <el-input v-model="editForm.nenber" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="房间地址：" :label-width="formLabelWidth">
+                    <el-input v-model="editForm.path" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="评价内容：" :label-width="formLabelWidth">
+                    <el-input v-model="editForm.msg" type="textarea" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+								<el-button @click="centerDialogVisiblestudent = false">取 消</el-button>
+								<el-button type="primary" @click="onSubmit_edit">确定评价</el-button>
+							</span>
+        </el-dialog>
+    <el-table :data="tableData" border style="width: 100%">
+        <el-table-column label="房间号">
+            <template slot-scope="scope">
+                <span style="margin-left: 10px" >{{scope.row.nenber}}</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="房间地址">
+            <template slot-scope="scope">
+                <span style="margin-left: 10px" >{{scope.row.path}}</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="价格(元/天)">
+            <template slot-scope="scope">
+
+                <span style="margin-left: 10px" >{{scope.row.money}}</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="押金(元)">
+            <template slot-scope="scope">
+
+                <span style="margin-left: 10px" >{{scope.row.ya_money}}</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="房间描述">
+            <template slot-scope="scope">
+
+                <span style="margin-left: 10px" >{{scope.row.body}}</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="入住人姓名">
+            <template slot-scope="scope">
+
+                <span style="margin-left: 10px" >{{scope.row.z_name}}</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="订单状态" >
+            <template slot-scope="scope">
+                <span v-if='scope.row.type==1'>未入住</span>
+                <span v-if='scope.row.type==2'>入住中</span>
+                <span v-if='scope.row.type==3'>已结束</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="评价内容" >
+            <template slot-scope="scope">
+                <span style="margin-left: 10px" >{{scope.row.plun}}</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作">
+            <template slot-scope="scope">
+                <p  v-if="scope.row.type!=3">结束的订单才能评价</p>
+                <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)" v-if="scope.row.type==3"><i class="el-icon-edit"></i>点击评价</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var user_id = localStorage.getItem("user_id");
+    var user_name = localStorage.getItem("user_name");
+    document.getElementById("menu").innerHTML = "你好！"+user_name;
+    var vm=  new Vue({
+        el: '#app',
+        data: {
+            api: serverUrl+'/image/?name=',
+            search:'',
+            formLabelWidth: '',
+            centerDialogVisible: false,
+            centerDialogVisiblelogin: false,
+            centerDialogVisiblemsg:false,
+            centerDialogVisiblestudent: false,
+            activeIndex: '3',
+            tableData: [],
+            form: {
+                user_name: '',
+                user_password: '',
+                z_name: '',
+                telephone: '',
+
+            },
+            editForm: {
+                nenber: '',
+                path: '',
+                msg: '',
+            },
+            loginform:{
+                name:'',
+                password: '',
+            },
+
+        },
+        mounted() {
+            this.convert(this.tableData);
+            this.notice(this.userData);
+        },
+        methods: {
+            handleEdit(index, row) {
+                console.log(index, row);//这里可打印出每行的内容
+                //点击编辑
+                this.centerDialogVisiblestudent = true //显示弹框
+                let _row = row
+                //将每一行的数据赋值给Dialog弹框（这里是重点）
+                this.editForm = Object.assign({}, row) // editForm是Dialog弹框的data
+            },
+            handleSelect(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            notice: function () {
+                axios.get(host + "/select_gonggao/").then(res => {
+                    this.userData = res.data.data;
+                })
+            },
+            convert: function () {
+                axios.post(host + "/select_all_user_order/",{id:user_id}).then(res => {
+                    this.tableData = res.data.data;
+                })
+            },
+
+            onSubmit_edit() {//修改表单提交的事件
+                axios({
+                    method: 'post',
+                    url: host + '/into_plun/',
+                    data: {
+                        plun: this.editForm.msg,
+                        id:this.editForm.id,
+                    },
+                })
+                    .then(function (response) {
+                        if (response.data.state == 1) {
+                            console.log(response.data.msg);
+                            alert(response.data.msg);
+                            window.location.reload();
+                        }
+                        else {
+                            alert(response.data.msg);
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    })
+            }
+
+        },
+    })
+</script>
+
+</html>

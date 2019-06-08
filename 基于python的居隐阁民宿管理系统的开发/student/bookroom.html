@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>我要订房</title>
+    <link rel="stylesheet" href="css/eleindex.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script type="text/javascript" src="js/vue.js"></script>
+    <script type="text/javascript" src="js/tool.js"></script>
+    <script type="text/javascript" src="js/eleindex.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="js/axios.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/css.css">
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/index.js"></script>
+    <style>
+        .el-row {
+            margin-bottom: 20px;
+        }
+        .el-col {
+            border-radius: 4px;
+        }
+
+        .bg-purple {
+            background: rgb(255, 255, 255);
+            border-color:black;
+            transition: transform .3s ease-in-out, box-shadow .3s cubic-bezier(.47, 0, .745, .715), border .3s linear .1s;
+        }
+        .bg-purple:hover {
+            box-shadow: 0 10px 50px rgba(51, 51, 51, .25);
+            -webkit-transform: translateY(-10px);
+            -moz-transform: translateY(-10px);
+            transform: translateY(-10px)
+        }
+    </style>
+</head>
+
+<body>
+<div class="line" id="app">
+    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+        <el-menu-item index="1"><a href="index.html" >民宿简介</a></el-menu-item>
+        <el-menu-item index="2" ><a href="bookroom.html" >我要订房</a></el-menu-item>
+        <el-menu-item index="3" ><a href="order.html" >我的订单</a></el-menu-item>
+        <el-menu-item index="4" @click="centerDialogVisiblemsg = true">查看公告</el-menu-item>
+    </el-menu>
+
+    <div class="searchWord" style="margin-top: -50px;margin-left: 400px">
+        <el-input v-model="search" style="display: inline-block;width: 250px;height: 30px;" placeholder="请输入搜索内容">
+        </el-input>
+    </div>
+    <div class="searchWord" style="margin-top: -21px;margin-left: 700px;position:absolute;">
+        <span style="font-size: 16px;font-weight:600;" id="menu"></span>
+    </div>
+
+
+    <el-dialog title="查看公告" :visible.sync="centerDialogVisiblemsg" width="30%" :modal-append-to-body='false' center>
+        <div v-for="(item,index) in userData" :key="item.id">
+            <p style="margin-left:15px;margin-top: 15px;font-size: 13px" v-html="item.title"></p>
+            <br>
+            <p style="margin-left:15px;margin-top:-10px;font-size: 13px;color:darkgray" v-html="item.msg"> </p>
+        </div>
+        <span slot="footer" class="dialog-footer">
+				<el-button @click="centerDialogVisiblemsg = false">取 消</el-button>
+			</span>
+    </el-dialog>
+
+    <el-dialog title="请填写信息注册" :visible.sync="centerDialogVisible" width="30%" :modal-append-to-body='false' center>
+        <el-form :model="form" ref="form">
+            <el-form-item label="用户真实姓名：" :label-width="formLabelWidth">
+                <el-input v-model="form.z_name" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="电话：" :label-width="formLabelWidth">
+                <el-input v-model="form.telephone" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="登录用户名：" :label-width="formLabelWidth">
+                <el-input v-model="form.user_name" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="登录密码：" :label-width="formLabelWidth">
+                <el-input v-model="form.user_password" autocomplete="off"></el-input>
+            </el-form-item>
+
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+				<el-button @click="centerDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="onSubmit">确定注册</el-button>
+			</span>
+    </el-dialog>
+
+    <el-dialog title="登录" :visible.sync="centerDialogVisiblelogin" width="30%" :modal-append-to-body='false' center>
+        <el-form :model="loginform" ref="loginform">
+            <el-form-item label="登录用户名：" :label-width="formLabelWidth">
+                <el-input v-model="loginform.user_name" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="登录密码：" :label-width="formLabelWidth">
+                <el-input v-model="loginform.user_password"  type="password" autocomplete="off"></el-input>
+            </el-form-item>
+
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+				<el-button @click="centerDialogVisiblelogin = false">取 消</el-button>
+				<el-button type="primary" @click="onSubmitlogin">确定登录</el-button>
+			</span>
+    </el-dialog>
+
+    <div style="padding: 40px;height: 100%; margin: 0">
+        <el-row :gutter="30">
+            <div v-for="(item,index) in tableData" :key="item.id">
+                <el-col :span="6">
+                    <div class="bg-purple">
+                        <div align="center">
+                            <img src="img/11.jpg" style="width:400px;height: 250px;margin-top: 20px">
+                            <br>
+                            <br>
+                        </div>
+                        <div>
+                            <span style="margin-left: 20px;font-size: 18px;width:250px;height: 200px;color: coral;font-weight:bold;font-weight: bold" v-html="item.path"></span>
+                            <br>
+                            <span style="margin-left: 20px;font-size: 15px;width:250px;height: 200px" v-html="api+item.nenber"></span>
+                            <br>
+                            <br>
+                            <span style="margin-left: 20px;font-size: 15px;width:250px;height: 200px" v-html="item.body"></span>
+                            <br>
+                            <br>
+                            <span style="margin-left: 20px;font-size: 16px;width:250px;height: 200px;color: coral;font-weight:bold;" v-html="api1+item.money"></span>
+                            <span style="margin-left: 20px;font-size: 15px;width:250px;height: 200px" v-html="api2+item.ya_money"></span>
+                            <el-button size="mini" type="primary" @click="getDataId(item)" style="margin-bottom:20px;margin-left: 30px">点击预定</el-button>
+                        </div>
+                    </div>
+                </el-col>
+            </div>
+        </el-row>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var user_id = localStorage.getItem("user_id");
+    var user_name = localStorage.getItem("user_name");
+    document.getElementById("menu").innerHTML = "你好！"+user_name;
+   new Vue({
+        el: '#app',
+        data: {
+            api: "房间号：",
+            api1: "价格(元/天)：",
+            api2: "押金(元)：",
+            search:'',
+            formLabelWidth: '',
+            centerDialogVisible: false,
+            centerDialogVisiblelogin: false,
+            centerDialogVisiblemsg:false,
+            activeIndex: '2',
+            tableData: [],
+            userData:[],
+            form: {
+                user_name: '',
+                user_password: '',
+                z_name: '',
+                telephone: '',
+
+            },
+            loginform:{
+                user_name:'',
+                user_password: '',
+            },
+
+        },
+        mounted() {
+            this.convert(this.tableData);
+            this.notice(this.userData);
+        },
+        methods: {
+            handleSelect(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            notice: function () {
+                axios.get(host + "/select_gonggao/").then(res => {
+                    this.userData = res.data.data;
+                })
+            },
+            convert: function () {
+                axios.get(host + "/select_all_home/").then(res => {
+                    this.tableData = res.data.data;
+                })
+            },
+            getDataId(item){//预定房间
+                axios({
+                    method: 'post',
+                    url: host + '/xiandan/',
+                    data: {
+                        user_id: user_id,
+                        home_id: item.id,
+                        ya_money: item.ya_money,
+                        money: item.money,
+
+                    },
+                })
+                    .then(function (response) {
+                        if (response.data.code == 1) {
+                            console.log(response.data.msg);
+                            alert(response.data.msg);
+                            window.location.reload();
+                        }
+                        else {
+                            alert(response.data.msg);
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    })
+
+            },
+
+
+
+        },
+    })
+</script>
+
+</html>

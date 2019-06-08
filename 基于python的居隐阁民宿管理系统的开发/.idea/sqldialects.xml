@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/bs_kezhan.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/new基于python的居隐阁民宿管理系统的开发_后台/bs_kezhan.sql" dialect="MariaDB" />
+  </component>
+</project>

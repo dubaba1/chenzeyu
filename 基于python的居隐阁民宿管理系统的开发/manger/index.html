@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>公告管理</title>
+	<link rel="stylesheet" href="css/layui.css" media="all" />
+	<script type="text/javascript" src="js/layui.js"></script>
+	<link rel="stylesheet" href="css/eleindex.css">
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script type="text/javascript" src="js/eleindex.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script type="text/javascript" src="js/axios.js"></script>
+	<script type="text/javascript" src="js/tool.js"></script>
+</head>
+
+<body>
+<div class="layui-layout layui-layout-admin">
+	<div class="layui-header">
+		<div class="layui-logo" style="margin-left:-22px">管理端</div>
+		<ul class="layui-nav layui-layout-right">
+			<li class="layui-nav-item">
+				<a href="javascript:;">
+				</a>
+			</li>
+
+		</ul>
+	</div>
+	<div class="layui-side layui-bg-black">
+		<div class="layui-side-scroll">
+			<ul class="layui-nav layui-nav-tree" lay-filter="test">
+				<li class="layui-nav-item">
+					<a class="layui-this" href="index.html"><i class="el-icon-edit-outline"></i> 公告管理</a>
+				</li>
+				<li class="layui-nav-item">
+					<a class="" href="room.html"><i class="el-icon-edit-outline"></i> 客房管理</a>
+				</li>
+				<li class="layui-nav-item">
+					<a class="" href="order.html"><i class="el-icon-edit-outline"></i> 办理入住</a>
+				</li>
+				<li class="layui-nav-item">
+					<a class="" href="outorder.html"><i class="el-icon-edit-outline"></i> 办理退房</a>
+				</li>
+				<li class="layui-nav-item">
+					<a class="" href="history.html"><i class="el-icon-edit-outline"></i> 历史订单</a>
+				</li>
+				<li class="layui-nav-item">
+				<a class="" href="user.html"><i class="el-icon-edit-outline"></i> 用户管理</a>
+			</li>
+
+			</ul>
+		</div>
+	</div>
+	<div class="layui-body">
+		<div style="padding: 15px;height: 100%; margin: 0">
+			<div class="login-box" id="app">
+				<el-button type="primary" style="margin-top: 10px;margin-bottom: 25px;" @click="centerDialogVisible = true"><i
+						class="el-icon-circle-plus-outline"></i>新增公告</el-button>
+				<div class="searchWord" style="text-align: center;margin-top: -65px;margin-bottom: 50px;">
+					<el-input v-model="search" style="display: inline-block;width: 300px;" placeholder="请输入搜索内容">
+					</el-input>
+				</div>
+				<el-dialog title="发布公告" :visible.sync="centerDialogVisible" width="30%" :modal-append-to-body='false' center>
+					<el-form :model="form" ref="form">
+						<el-form-item label="公告标题：" :label-width="formLabelWidth">
+							<el-input v-model="form.title" autocomplete="off"></el-input>
+						</el-form-item>
+						<el-form-item label="公告内容：" :label-width="formLabelWidth">
+							<el-input v-model="form.msg" type="textarea" autocomplete="off"></el-input>
+						</el-form-item>
+					</el-form>
+					<span slot="footer" class="dialog-footer">
+							<el-button @click="centerDialogVisible = false">取 消</el-button>
+							<el-button type="primary" @click="onSubmitfabu">确定发布</el-button>
+						</span>
+				</el-dialog>
+				<el-table :data="tables" border style="width: 100%">
+					<el-table-column label="公告标题">
+						<template slot-scope="scope">
+							<span style="margin-left: 10px" >{{scope.row.title}}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="公告内容">
+						<template slot-scope="scope">
+							<span style="margin-left: 10px" >{{scope.row.msg}}</span>
+						</template>
+					</el-table-column>
+				</el-table>
+
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	var manger_id = localStorage.getItem("manger_id");
+	var vm=new Vue({
+		el: '#app',
+		data: {
+			api: serverUrl+'/image/?name=',
+			search: '',
+			formLabelWidth: '',
+			centerDialogVisible: false,
+			centerDialogVisiblestudent: false,
+			form: {
+				title:'',
+				msg:'',
+			},
+			tableData: [],
+
+		},
+		mounted() {
+			this.convert(this.tableData);
+		},
+		computed: {
+			tables: function () {
+				const search = this.search
+				if (search) {
+					return this.tableData.filter(dataNews => {
+						return Object.keys(dataNews).some(key => {
+							return String(dataNews[key]).toLowerCase().indexOf(search) > -1
+						})
+					})
+				}
+				return this.tableData
+			}
+		},
+		methods: {
+			convert: function () {
+				axios.get(host + "/select_gonggao/").then(res => {
+					this.tableData = res.data.data;
+				})
+			},
+			onSubmitfabu(){
+				axios({
+					method: 'post',
+					url: host + '/insert_gonggao/',
+					data: {
+						title:this.form.title,
+						msg:this.form.msg,
+					},
+				})
+						.then(function (response) {
+							if (response.data.code == 1) {
+								console.log(response.data.msg);
+								alert(response.data.msg);
+								window.location.reload();
+							}
+							else {
+								alert(response.data.msg);
+							}
+						})
+						.catch(function (error) {
+							console.log(error);
+						})
+
+			},
+
+		},
+	})
+</script>
+
+</html>

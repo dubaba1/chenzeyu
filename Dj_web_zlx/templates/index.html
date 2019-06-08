@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>郑理欣_index</title>
+    <link rel="icon" href="../static/logo.jpg" type="image/x-icon"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts-en.common.min.js"></script>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+ <link href="../static/css.css" rel="stylesheet" type="text/css" media="all"/>
+    	<link href="../static/xiala.css"  rel="stylesheet" type="text/css" media="all" />
+
+</head>
+<body class="signin">
+
+<div>
+    <div >
+    <div id="main1" style="width: 600px;height:400px; float: left"></div>
+    <div id="main2" style="width: 600px;height:400px; float: left"></div>
+</div>
+</div>
+
+<script type="text/javascript">
+
+    var list = {{ data1| safe }};
+    var xAxisList = [];
+    var yAxisList = [];
+    for (let item of list){
+        xAxisList.push(item.fields.type);
+        yAxisList.push(item.fields.freq);
+    }
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main1'));
+    // 指定图表的配置项和数据
+    var option = {
+        color: function (params) {
+            var colorList = ['#BA55D3', '#f67287', '#f29e3c', '#c05bdd', '#7a65f2', '#8A2BE2']; //每根柱子的颜色
+            return colorList[params.dataIndex];
+        },
+        tooltip: {},  <!-- 鼠标放上去会显示数据 -->
+        title: {
+            text: '最受欢迎的属性'
+        },
+        legend: {
+            data: ['dulaoc']
+        },
+        xAxis: {
+
+            name: '属性',
+            data: xAxisList
+        },
+        yAxis: {
+            name: '数量',
+            type: 'value'
+        },
+        series: [{
+            name: '销量',
+            type: 'bar',
+            data: yAxisList
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+<script type="text/javascript">
+    var list2= {{ data2| safe }};
+    var xAxisList1 = [];
+    var yAxisList1 = [];
+    for (let item1 of list2){
+        xAxisList1.push(item1.fields.price);
+        yAxisList1.push(item1.fields.amount);
+    }
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById("main2"));
+
+    // 指定图表的配置项和数据
+    var option = {
+        color: '#7a65f2',//改变区域颜色
+        title: {
+            text: '销量和定价的关系'
+        },
+        tooltip: {},
+        xAxis: {
+            type: 'category',
+              name: '定价',
+            boundaryGap: false,
+
+            data: xAxisList1
+        },
+        yAxis: {
+            name: '销量',
+            type: 'value'
+        },
+        series: [{
+            data: yAxisList1,
+            type: 'line',
+            areaStyle: {} <!-- 可去掉 决定是否为有区域的折线 -->
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+<div>
+
+<div style="width: 1300px;height:300px; float: left">   <!-- style="background: #18c8f6"  -->
+
+    <table style="border:1px" >
+        <caption><h1>商品好评Top10</h1></caption>
+        <tr style="border-width: 1px;
+border-style: solid;
+border-color: rgb(81, 130, 187);">
+            <th>商品id</th>
+            <th>商品标题</th>
+            <th>店铺id</th>
+            <th>店铺名字</th>
+            <th>情感分析值</th>
+
+        </tr>
+        <tr>
+            {% for emo in data %}
+                <td style="height:30px; border:#CC00FF 1px solid;">{{ emo.goodsId }}</td>
+                 <td style="height:30px; border:#CC00FF 1px solid;">{{ emo.productTitle }}</td>
+                 <td style="height:30px; border:#CC00FF 1px solid;">{{ emo.storeId }}</td>
+                <td style="height:30px; border:#CC00FF 1px solid;">{{ emo.storeName }}</td>
+                 <td style="height:30px; border:#CC00FF 1px solid;">{{ emo.new }}</td>
+
+                </tr>
+            {% endfor %}
+    </table>
+
+
+
+
+<div class="select">
+	<span><a href="javascript:void(0);">店铺详情</a></span>
+	<div class="drop">
+		<ul>
+			<li>
+				<a href="../shop1/">美丽天下鞋类专营店</a>
+			</li>
+			<li>
+				<a href="../shop2/">mgeneral旗舰店</a>
+			</li>
+			<li>
+				<a href="../shop3/">安踏官方网店</a>
+			</li>
+			<li>
+				<a href="../shop4/">羽足旗舰店</a>
+			</li>
+			<li>
+				<a href="../shop5/">一品公主旗舰店</a>
+			</li>
+			<li>
+				<a href="../shop6/">回力扬帆起航专卖店</a>
+			</li>
+			<li>
+				<a href="../shop7/">冀优鞋类专营店</a>
+			</li>
+			<li>
+				<a href="../shop8/">playboy圣道专卖店</a>
+			</li>
+			<li>
+				<a href="../shop9/">honeygirl旗舰店</a>
+			</li>
+		</ul>
+	</div>
+</div>
+</div>
+
+
+
+</div>
+
+
+
+
+<div class="main">
+
+                <div class="content-bottom-right"   >
+
+
+                </div>
+
+
+
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+</body>
+</html>
+

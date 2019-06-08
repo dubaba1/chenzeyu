@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+ <link href="../static/css.css" rel="stylesheet" type="text/css" media="all"/>
+
+        <link rel="icon" href="../static/logo.jpg" type="image/x-icon"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts-en.common.min.js"></script>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+</head>
+<body class="signin">
+
+ <div id="main1" style="width: 600px;height:500px; float: left"></div>
+<script type="text/javascript">
+
+    var list = {{ shop1| safe }};
+    var xAxisList = [];
+    var yAxisList = [];
+    console.log(list)
+    for (let item of list){
+        xAxisList.push(item.fields.productTitle);
+        yAxisList.push(item.fields.productStatus);
+    }
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main1'));
+    // 指定图表的配置项和数据
+    var option = {
+        color: function (params) {
+            var colorList = ['#BA55D3']; //每根柱子的颜色
+            return colorList[params.dataIndex];
+        },
+        tooltip: {},  <!-- 鼠标放上去会显示数据 -->
+        title: {
+            text: '美丽天下鞋类专营店鞋子销量排行'
+        },
+        legend: {
+            data: ['dulaoc']
+        },
+        xAxis: {
+
+            name: '鞋子',
+            data: xAxisList,
+        },
+        yAxis: {
+            name: '销量',
+            type: 'value'
+        },
+        series: [{
+            name: '销量',
+            type: 'bar',
+            data: yAxisList
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+</body>
+</html>

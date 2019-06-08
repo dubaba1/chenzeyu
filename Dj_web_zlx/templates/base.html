@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>郑理欣_index</title>
+    <link rel="stylesheet" href="/static/css/css.css">
+<link rel="icon" href="../static/images/logo.jpg" type="image/x-icon"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts-en.common.min.js"></script>
+</head>
+<body  class="signin">
+
+
+  <div id="test" style="width: 600px;height:400px; float: left">
+        <table border="1">
+<caption>  <h1 >测试1</h1> </caption>
+  <tr>
+    <th>受欢迎属性</th>
+    <th>出现频率</th>
+
+  </tr>
+  <tr>
+    {% for emo1 in data1 %}
+    <td>{{emo1.type}}</td>
+    <td>{{emo1.freq}}</td>
+  </tr>
+    {% endfor %}
+</table>
+     </div>
+</body>
+</html>

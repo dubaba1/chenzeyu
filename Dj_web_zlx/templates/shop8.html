@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+ <link href="../static/css.css" rel="stylesheet" type="text/css" media="all"/>
+
+        <link rel="icon" href="../static/logo.jpg" type="image/x-icon"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts-en.common.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+</head>
+<body  class="signin">
+<div style="height: 800px">
+ <div id="main1" style="width: 100%;height:500px; align:center "></div>
+</div>
+<script type="text/javascript">
+
+    var list = {{ shop8| safe }};
+    var xAxisList = [];
+    var yAxisList = [];
+    for (let item of list){
+        xAxisList.push(item.fields.productTitle);
+        yAxisList.push(item.fields.productStatus);
+    }
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main1'));
+    // 指定图表的配置项和数据
+    var option = {
+        color: function (params) {
+            var colorList = ['#BA55D3', '#f67287', '#f29e3c', '#c05bdd', '#7a65f2', '#8A2BE2']; //每根柱子的颜色
+            return colorList[params.dataIndex];
+        },
+        tooltip: {},  <!-- 鼠标放上去会显示数据 -->
+        title: {
+            text: 'playboy圣道专卖店鞋子销量排行'
+        },
+        legend: {
+            data: ['dulaoc']
+        },
+        xAxis: {
+
+            name: '鞋子',
+            data: xAxisList,
+            axisLabel : {//坐标轴刻度标签的相关设置。
+                clickable:true,//并给图表添加单击事件  根据返回值判断点击的是哪里
+                interval : 0,
+                formatter : function(params,index){
+                    if (index % 2 != 0) {
+                        return '\n\n' + params;
+                    }
+                    else {
+                        return params;
+                    }
+                }
+
+            }
+
+        },
+        yAxis: {
+            name: '销量',
+            type: 'value'
+        },
+        series: [{
+            name: '销量',
+            type: 'bar',
+            data: yAxisList
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+</body>
+</html>

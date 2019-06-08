@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+ <link href="../static/css.css" rel="stylesheet" type="text/css" media="all"/>
+
+        <link rel="icon" href="../static/logo.jpg" type="image/x-icon"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts-en.common.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+</head>
+<body  class="signin">
+<div style="height: 800px">
+ <div id="main1" style="width: 100%;height:500px; align:center "></div>
+</div>
+<script type="text/javascript">
+
+    var list = {{ shop2| safe }};
+    var xAxisList = [];
+    var yAxisList = [];
+    for (let item of list){
+        xAxisList.push(item.fields.productTitle);
+        yAxisList.push(item.fields.productStatus);
+    }
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main1'));
+    // 指定图表的配置项和数据
+    var option = {
+        color: function (params) {
+            var colorList = ['#BA55D3', '#f67287', '#f29e3c', '#c05bdd', '#7a65f2', '#8A2BE2']; //每根柱子的颜色
+            return colorList[params.dataIndex];
+        },
+        tooltip: {},  <!-- 鼠标放上去会显示数据 -->
+        title: {
+            text: 'mgeneral旗舰店鞋子销量排行'
+        },
+        legend: {
+            data: ['dulaoc']
+        },
+        xAxis: {
+
+            name: '鞋子',
+            data: xAxisList,
+            axisLabel : {//坐标轴刻度标签的相关设置。
+                clickable:true,//并给图表添加单击事件  根据返回值判断点击的是哪里
+                interval : 0,
+                formatter: function(value) {
+                        // console.log(value);
+                        var valueDetal = value.split("-").join("");
+                        console.log(valueDetal);
+                        var ret = ""; //拼接加\n返回的类目项
+                        var maxLength = 10; //每项显示文字个数
+                        var valLength = valueDetal.length; //X轴类目项的文字个数
+                        // console.log(valLength);
+                        var rowN = Math.ceil(valLength / maxLength); //类目项需要换行的行数
+                        if (rowN > 1) { //如果类目项的文字大于3,
+                            for (var i = 0; i < rowN; i++) {
+                                var temp = ""; //每次截取的字符串
+                                var start = i * maxLength; //开始截取的位置
+                                var end = start + maxLength; //结束截取的位置
+                         //这里也可以加一个是否是最后一行的判断，但是不加也没有影响，那就不加吧
+                                temp = valueDetal.substring(start, end) + "\n";
+                                ret += temp; //凭借最终的字符串
+                            }
+                            return ret;
+                        } else {
+                            return valueDetal;
+                    }
+                },
+
+            }
+
+        },
+        yAxis: {
+            name: '销量',
+            type: 'value'
+        },
+        series: [{
+            name: '销量',
+            type: 'bar',
+            data: yAxisList
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+</body>
+</html>
